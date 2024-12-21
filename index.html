@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* Previous styles remain the same until .countdown */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #ff4d4d;
+            --secondary-color: #4dff4d;
+            --background-dark: #1a1a1a;
+            --background-light: #2c3e50;
+            --gold: #ffd700;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, var(--background-dark), var(--background-light));
+            color: white;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            text-align: center;
+            padding: 3rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+                        inset 0 0 30px rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            max-width: 90vw;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(45deg, var(--primary-color), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: titleGlow 2s ease-in-out infinite;
+        }
+
+        .countdown-section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .countdown-section:hover {
+            background: rgba(0, 0, 0, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .countdown {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .time-unit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 100px;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .time-unit:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .time-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--gold);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .time-label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            color: #fff;
+            margin-top: 0.5rem;
+            letter-spacing: 1px;
+        }
+
+        .message {
+            font-size: 1.8rem;
+            margin-top: 1rem;
+            color: var(--gold);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            animation: fadeInOut 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); filter: brightness(100%); }
+            50% { transform: scale(1.05); filter: brightness(120%); }
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .time-value { font-size: 1.8rem; }
+            .time-unit { min-width: 70px; padding: 0.5rem; }
+            .message { font-size: 1.2rem; }
+            .container { padding: 1.5rem; }
+            .countdown { gap: 0.5rem; }
+        }
+
+        .decoration {
+            position: absolute;
+            font-size: 2rem;
+            animation: twinkle 1.5s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()">Change Theme</button>
+    <div class="container">
+        <h1>🎄 Holiday Countdown 🎉</h1>
+        
+        <div class="countdown-section">
+            <h2 style="color: var(--gold); margin-bottom: 1rem;">Time Until Christmas</h2>
+            <div class="countdown" id="christmas-countdown"></div>
+            <div class="message" id="christmas-message"></div>
+        </div>
+
+        <div class="countdown-section">
+            <h2 style="color: var(--gold); margin-bottom: 1rem;">Time Until New Year</h2>
+            <div class="countdown" id="newyear-countdown"></div>
+            <div class="message" id="newyear-message"></div>
+        </div>
+    </div>
+
+    <script>
+        let isDarkTheme = true;
+
+        function toggleTheme() {
+            const root = document.documentElement;
+            isDarkTheme = !isDarkTheme;
+            
+            if (isDarkTheme) {
+                root.style.setProperty('--background-dark', '#1a1a1a');
+                root.style.setProperty('--background-light', '#2c3e50');
+            } else {
+                root.style.setProperty('--background-dark', '#ff8c8c');
+                root.style.setProperty('--background-light', '#8cff8c');
+            }
+        }
+
+        function createDecoration() {
+            const decorations = ['🎄', '⭐', '🎁', '❄️', '🔔', '🕯️'];
+            const decoration = document.createElement('div');
+            decoration.classList.add('decoration');
+            decoration.textContent = decorations[Math.floor(Math.random() * decorations.length)];
+            
+            decoration.style.left = Math.random() * 90 + 5 + 'vw';
+            decoration.style.top = Math.random() * 90 + 5 + 'vh';
+            
+            document.body.appendChild(decoration);
+            setTimeout(() => decoration.remove(), 3000);
+        }
+
+        function formatTimeUnit(value, label) {
+            return `
+                <div class="time-unit">
+                    <div class="time-value">${String(value).padStart(2, '0')}</div>
+                    <div class="time-label">${label}</div>
+                </div>
+            `;
+        }
+
+        function getTimeRemaining(endTime) {
+            const total = endTime - new Date();
+            const seconds = Math.floor((total / 1000) % 60);
+            const minutes = Math.floor((total / 1000 / 60) % 60);
+            const hours = Math.floor((total / (1000 * 60 * 60)) % 24);
+            const days = Math.floor(total / (1000 * 60 * 60 * 24));
+
+            return {
+                total,
+                days,
+                hours,
+                minutes,
+                seconds
+            };
+        }
+
+        function updateCountdowns() {
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            
+            const christmas = new Date(currentYear, 11, 25);
+            if (now > christmas) christmas.setFullYear(currentYear + 1);
+            
+            const newYear = new Date(currentYear + 1, 0, 1);
+            
+            const christmasTime = getTimeRemaining(christmas);
+            const newYearTime = getTimeRemaining(newYear);
+
+            document.getElementById('christmas-countdown').innerHTML = 
+                formatTimeUnit(christmasTime.days, 'days') +
+                formatTimeUnit(christmasTime.hours, 'hours') +
+                formatTimeUnit(christmasTime.minutes, 'mins') +
+                formatTimeUnit(christmasTime.seconds, 'secs');
+
+            document.getElementById('newyear-countdown').innerHTML = 
+                formatTimeUnit(newYearTime.days, 'days') +
+                formatTimeUnit(newYearTime.hours, 'hours') +
+                formatTimeUnit(newYearTime.minutes, 'mins') +
+                formatTimeUnit(newYearTime.seconds, 'secs');
+            
+            if (christmasTime.total <= 0) {
+                document.getElementById('christmas-message').innerHTML = 
+                    '🎄 Merry Christmas! May your day be filled with joy and wonder! 🎄';
+            } else {
+                const messages = [
+                    'Get ready for the magic of Christmas! ✨',
+                    'Santa\'s counting down too! 🎅',
+                    'Time to spread holiday cheer! 🎁',
+                    'Making spirits bright! 🌟'
+                ];
+                document.getElementById('christmas-message').innerHTML = 
+                    messages[Math.floor(Math.random() * messages.length)];
+            }
+            
+            if (newYearTime.total <= 0) {
+                document.getElementById('newyear-message').innerHTML = 
+                    '🎉 Happy New Year! Here\'s to new beginnings! 🎊';
+            } else {
+                const messages = [
+                    'Counting down to a fantastic New Year! 🌟',
+                    'New adventures await! ✨',
+                    'Time for new beginnings! 🎊',
+                    'The best is yet to come! 🌈'
+                ];
+                document.getElementById('newyear-message').innerHTML = 
+                    messages[Math.floor(Math.random() * messages.length)];
+            }
+        }
+
+        // Initialize
+        setInterval(createDecoration, 2000);
+        updateCountdowns();
+        setInterval(updateCountdowns, 1000); // Update every second
+
+        // Add interactive elements
+        document.addEventListener('mousemove', (e) => {
+            if (Math.random() < 0.1) {
+                const decoration = document.createElement('div');
+                decoration.classList.add('decoration');
+                decoration.textContent = '✨';
+                decoration.style.left = e.clientX + 'px';
+                decoration.style.top = e.clientY + 'px';
+                document.body.appendChild(decoration);
+                setTimeout(() => decoration.remove(), 1000);
+            }
+        });
+    </script>
+</body>
+</html>
